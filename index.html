@@ -47,8 +47,8 @@ img {
 .buttons {
     margin-top: 15px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 button {
@@ -58,7 +58,7 @@ button {
     border-radius: 10px;
     cursor: pointer;
     margin: 6px;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
 }
 
 #yesBtn {
@@ -69,6 +69,7 @@ button {
 #noBtn {
     background-color: #444;
     color: white;
+    transition: all 0.4s ease;
 }
 
 .heart {
@@ -93,7 +94,7 @@ button {
 <img id="moodImage" src="gifs/1.gif">
 
 <div class="buttons">
-    <button id="yesBtn" onclick="sayNoGrowth()">Yes, I will be your Valentine ❤️</button>
+    <button id="yesBtn" onclick="sayYes()">Yes, I will be your Valentine ❤️</button>
     <button id="noBtn" onclick="sayNo()">No</button>
 </div>
 
@@ -103,7 +104,6 @@ button {
 
 let noCount = 0;
 
-// 60 messages
 const questions = [];
 for (let i = 1; i <= 60; i++) {
     if (i % 7 === 0) {
@@ -117,8 +117,6 @@ for (let i = 1; i <= 60; i++) {
     }
 }
 
-const noButtonTexts = questions.map(() => "I am sure 😤");
-
 function sayNo() {
 
     const question = document.getElementById("question");
@@ -127,28 +125,39 @@ function sayNo() {
     const moodImage = document.getElementById("moodImage");
 
     question.innerText = questions[noCount % questions.length];
-    noBtn.innerText = noButtonTexts[noCount % noButtonTexts.length];
 
     let gifIndex = ((noCount + 1) % 30) + 1;
     moodImage.src = "gifs/" + gifIndex + ".gif";
 
     noCount++;
 
-    // Controlled growth (slow + capped)
-    let growth = Math.min(noCount * 1.8, 28);
-    yesBtn.style.fontSize = (18 + growth) + "px";
-    yesBtn.style.padding = (10 + growth * 0.6) + "px " + (18 + growth) + "px";
+    // YES grows smoothly
+    let growth = Math.min(noCount * 2.5, 80);
+    yesBtn.style.transform = `scale(${1 + growth / 100})`;
 
-    // Only takeover after 25 clicks
-    if (noCount > 25) {
+    // NO shrinks gradually
+    let shrink = Math.max(1 - (noCount * 0.04), 0);
+    noBtn.style.transform = `scale(${shrink})`;
+
+    // NO fades after 15 clicks
+    if (noCount > 15) {
+        let fade = Math.max(1 - ((noCount - 15) / 15), 0);
+        noBtn.style.opacity = fade;
+    }
+
+    // NO disappears after 30 clicks
+    if (noCount > 30) {
+        noBtn.style.display = "none";
+    }
+
+    // Full takeover after 40 clicks
+    if (noCount > 40) {
         yesBtn.style.position = "fixed";
-        yesBtn.style.top = "0";
-        yesBtn.style.left = "0";
-        yesBtn.style.width = "100vw";
-        yesBtn.style.height = "100svh";
+        yesBtn.style.inset = "0";
         yesBtn.style.borderRadius = "0";
         yesBtn.style.fontSize = "clamp(26px, 8vw, 48px)";
         yesBtn.style.zIndex = "999";
+        yesBtn.style.transform = "scale(1)";
     }
 }
 
@@ -173,7 +182,6 @@ function createConfetti() {
         conf.style.background = `hsl(${Math.random()*360},100%,50%)`;
         conf.style.left = Math.random() * 100 + "vw";
         conf.style.top = "-10px";
-        conf.style.opacity = 1;
         conf.style.transition = "top 2s linear, opacity 2s";
         document.body.appendChild(conf);
 
@@ -186,14 +194,11 @@ function createConfetti() {
     }
 }
 
-function sayNoGrowth() {
-    sayYes();
-}
-
 function sayYes() {
 
-    document.body.style.background = "url('BG2.jpg') no-repeat center center/cover";
     document.body.innerHTML = "";
+
+    document.body.style.background = "url('BG2.jpg') no-repeat center center/cover";
 
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
