@@ -8,47 +8,56 @@
 <style>
 body {
     margin: 0;
+    min-height: 100svh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    flex-direction: column;
     font-family: Arial, sans-serif;
     background: url('BG.jpg') no-repeat center center/cover;
-    overflow-x: hidden;
+    overflow: hidden;
     text-align: center;
     transition: background 0.8s ease;
+}
+
+#mainContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 95vw;
+    max-height: 95svh;
 }
 
 h1 {
     max-width: 90vw;
     padding: 0 15px;
     color: white;
-    font-size: clamp(22px, 5vw, 40px);
+    font-size: clamp(20px, 5vw, 40px);
     text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+    margin: 10px 0;
 }
 
 img {
-    width: min(80vw, 320px);
+    width: min(75vw, 300px);
     height: auto;
-    margin-top: 20px;
+    margin: 10px 0;
     border-radius: 12px;
 }
 
 .buttons {
-    margin-top: 25px;
+    margin-top: 15px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 button {
-    padding: 12px 22px;
+    padding: 10px 18px;
     font-size: clamp(14px, 4vw, 18px);
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    margin: 8px;
+    margin: 6px;
     transition: all 0.3s ease;
 }
 
@@ -64,32 +73,37 @@ button {
 
 .heart {
     position: fixed;
-    font-size: 24px;
+    font-size: 20px;
     animation: floatUp 4s linear infinite;
 }
 
 @keyframes floatUp {
-    0% { transform: translateY(100vh); opacity: 1; }
-    100% { transform: translateY(-10vh); opacity: 0; }
+    0% { transform: translateY(100%); opacity: 1; }
+    100% { transform: translateY(-120%); opacity: 0; }
 }
 </style>
 </head>
 
 <body>
 
+<div id="mainContainer">
+
 <h1 id="question">Will you be my Valentine, Billu? ❤️</h1>
 
 <img id="moodImage" src="gifs/1.gif">
 
 <div class="buttons">
-    <button id="yesBtn" onclick="sayYes()">Yes, I will be your Valentine ❤️</button>
+    <button id="yesBtn" onclick="sayNoGrowth()">Yes, I will be your Valentine ❤️</button>
     <button id="noBtn" onclick="sayNo()">No</button>
+</div>
+
 </div>
 
 <script>
 
 let noCount = 0;
 
+// 60 messages
 const questions = [];
 for (let i = 1; i <= 60; i++) {
     if (i % 7 === 0) {
@@ -120,19 +134,20 @@ function sayNo() {
 
     noCount++;
 
-    // Controlled growth so it doesn’t explode on mobile
-    let growth = Math.min(noCount * 3, 40);
+    // Controlled growth (slow + capped)
+    let growth = Math.min(noCount * 1.8, 28);
     yesBtn.style.fontSize = (18 + growth) + "px";
-    yesBtn.style.padding = (12 + growth) + "px " + (20 + growth) + "px";
+    yesBtn.style.padding = (10 + growth * 0.6) + "px " + (18 + growth) + "px";
 
-    if (noCount > 45) {
+    // Only takeover after 25 clicks
+    if (noCount > 25) {
         yesBtn.style.position = "fixed";
         yesBtn.style.top = "0";
         yesBtn.style.left = "0";
         yesBtn.style.width = "100vw";
-        yesBtn.style.height = "100vh";
+        yesBtn.style.height = "100svh";
         yesBtn.style.borderRadius = "0";
-        yesBtn.style.fontSize = "clamp(24px, 8vw, 50px)";
+        yesBtn.style.fontSize = "clamp(26px, 8vw, 48px)";
         yesBtn.style.zIndex = "999";
     }
 }
@@ -163,7 +178,7 @@ function createConfetti() {
         document.body.appendChild(conf);
 
         setTimeout(() => {
-            conf.style.top = "100vh";
+            conf.style.top = "100svh";
             conf.style.opacity = 0;
         }, 50);
 
@@ -171,42 +186,42 @@ function createConfetti() {
     }
 }
 
+function sayNoGrowth() {
+    sayYes();
+}
+
 function sayYes() {
 
-    document.body.style.display = "block";
+    document.body.style.background = "url('BG2.jpg') no-repeat center center/cover";
+    document.body.innerHTML = "";
 
-    document.body.innerHTML = `
-        <div style="
-            position:fixed;
-            inset:0;
-            background: url('BG2.jpg') no-repeat center center/cover;
-        ">
-            <div style="
-                position:absolute;
-                inset:0;
-                background: rgba(0,0,0,0.45);
-            "></div>
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.background = "rgba(0,0,0,0.45)";
+    document.body.appendChild(overlay);
 
-            <div style="
-                position:relative;
-                z-index:2;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                height:100vh;
-                width:100vw;
-                flex-direction:column;
-                text-align:center;
-                color:white;
-                font-family:Arial;
-            ">
-                <img id="happyImage" src="gifs/happygifs/1.gif" style="width:min(80vw,350px); border-radius:12px;">
-                <h1 style="font-size:clamp(26px,6vw,60px); margin:20px 0;">YAYYYY BILLU ❤️❤️❤️</h1>
-                <p style="font-size:clamp(18px,5vw,28px);">happi happi happi 😌</p>
-                <p style="font-size:clamp(18px,5vw,28px);">Happy Valentines Day mere jigar ke tukde 😘🥰</p>
-            </div>
-        </div>
+    const container = document.createElement("div");
+    container.style.position = "relative";
+    container.style.zIndex = "2";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.justifyContent = "center";
+    container.style.alignItems = "center";
+    container.style.height = "100svh";
+    container.style.width = "100vw";
+    container.style.textAlign = "center";
+    container.style.color = "white";
+    container.style.fontFamily = "Arial";
+
+    container.innerHTML = `
+        <img id="happyImage" src="gifs/happygifs/1.gif" style="width:min(80vw,350px); border-radius:12px;">
+        <h1 style="font-size:clamp(26px,6vw,60px); margin:20px 0;">YAYYYY BILLU ❤️❤️❤️</h1>
+        <p style="font-size:clamp(18px,5vw,28px);">happi happi happi 😌</p>
+        <p style="font-size:clamp(18px,5vw,28px);">Happy Valentines Day mere jigar ke tukde 😘🥰</p>
     `;
+
+    document.body.appendChild(container);
 
     createConfetti();
     createHearts();
